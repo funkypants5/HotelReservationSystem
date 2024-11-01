@@ -4,8 +4,6 @@
  */
 package ejb.session.stateless;
 
-import entity.Employee;
-import java.util.List;
 import javax.ejb.Local;
 
 /**
@@ -13,10 +11,6 @@ import javax.ejb.Local;
  * @author zchoo
  */
 @Local
-public interface employeeSessionBeanLocal {
-
-    public void createEmployee(Employee employee);
-    
-    public List<Employee> viewAllEmployees();
+public interface RoomSessionBeanLocal {
     
 }

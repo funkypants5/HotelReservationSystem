@@ -4,8 +4,7 @@
  */
 package ejb.session.singleton;
 
-import ejb.session.stateless.employeeSessionBeanLocal;
-import entity.Employee;
+import entity.EmployeeEntity;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
@@ -13,6 +12,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import ejb.session.stateless.EmployeeSessionBeanLocal;
+import util.enumeration.AccessRights;
 
 /**
  *
@@ -25,15 +26,15 @@ import javax.persistence.PersistenceContext;
 public class DataInitSessionBean {
 
     @EJB
-    private employeeSessionBeanLocal employeeSessionBean;
+    private EmployeeSessionBeanLocal employeeSessionBean;
 
     @PersistenceContext(unitName = "HotelReservationSystem-ejbPU")
     private EntityManager em;
     
     @PostConstruct
     public void postConstruct() {
-        if(em.find(Employee.class, 1l) == null) {
-            employeeSessionBean.createEmployee(new Employee());
+        if(em.find(EmployeeEntity.class, 1l) == null) {
+            employeeSessionBean.createEmployee(new EmployeeEntity("Sean", "Lee", AccessRights.SYSTEMADMIN, "sean123", "password"));
         }
     }
 
