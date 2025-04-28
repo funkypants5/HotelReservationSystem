@@ -62,11 +62,11 @@ public class SystemAdministrationModule {
         try {
             Scanner sc = new Scanner(System.in);
             System.out.print("Enter first name: ");
-            String firstName = sc.next().trim();
+            String firstName = sc.nextLine();
             validateName(firstName);
 
             System.out.print("Enter last name: ");
-            String lastName = sc.next().trim();
+            String lastName = sc.nextLine();
             validateName(lastName);
 
             System.out.println("Enter access rights: ");
@@ -76,6 +76,7 @@ public class SystemAdministrationModule {
             System.out.println("4: GUESTRELATIONOFFICER");
             System.out.print("> ");
             int accessRightsInput = sc.nextInt();
+            sc.nextLine();
             AccessRights accessRights = null;
             switch (accessRightsInput) {
                 case 1:
@@ -100,11 +101,11 @@ public class SystemAdministrationModule {
             }
 
             System.out.print("Enter username (min 7 characters): ");
-            String username = sc.next().trim();
+            String username = sc.nextLine();
             validateUsername(username);
 
             System.out.print("Enter password (min 7 characters): ");
-            String password = sc.next().trim();
+            String password = sc.nextLine();
             validatePassword(password);
 
             EmployeeEntity employee = new EmployeeEntity(firstName, lastName, accessRights, username, password);
@@ -131,14 +132,14 @@ public class SystemAdministrationModule {
         try { 
             Scanner sc = new Scanner(System.in);
             System.out.print("Please key in partner's email: ");
-            String email = sc.next().trim();
+            String email = sc.nextLine().trim();
             System.out.print("Please key in partner's password: ");
-            String password = sc.next().trim();
+            String password = sc.nextLine().trim();
             validatePassword(password);
             System.out.print("Please key in partner's company name: ");
-            String name = sc.next().trim();
-            partnerSessionBeanRemote.createNewPartner(new PartnerEntity(email, password, name));
-            System.out.println("\nNew partner created!\n");
+            String name = sc.nextLine();
+            Long partnerId = partnerSessionBeanRemote.createNewPartner(new PartnerEntity(email, password, name));
+            System.out.println("\nNew partner created with id " + partnerId + "\n");
         } catch (InvalidInputException e) {
             System.out.println("Error: " + e.getMessage());
         } catch (Exception e) {

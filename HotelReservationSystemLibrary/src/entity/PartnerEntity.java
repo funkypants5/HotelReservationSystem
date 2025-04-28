@@ -5,11 +5,14 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.Size;
 
 /**
@@ -30,6 +33,9 @@ public class PartnerEntity implements Serializable {
     private String password; 
     @Column(nullable = false, unique = true)
     private String partnerName;
+    
+    @OneToMany(mappedBy = "partner")
+    private List<ReservationEntity> reservations;
 
     public PartnerEntity() {
     }
@@ -38,6 +44,14 @@ public class PartnerEntity implements Serializable {
         this.email = email;
         this.password = password;
         this.partnerName = partnerName;
+    }
+
+    public List<ReservationEntity> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<ReservationEntity> reservations) {
+        this.reservations = reservations;
     }
 
     public String getEmail() {

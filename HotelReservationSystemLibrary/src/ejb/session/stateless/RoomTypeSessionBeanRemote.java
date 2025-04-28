@@ -16,7 +16,7 @@ import util.exception.RecordNotFoundException;
 @Remote
 public interface RoomTypeSessionBeanRemote {
 
-    public Long createNewRoomType(RoomTypeEntity roomType);
+    public Long createNewRoomType(RoomTypeEntity roomType, Long nextHighest) throws RecordNotFoundException;
 
     public RoomTypeEntity retrieveRoomType(String roomTypeName) throws RecordNotFoundException;
 
@@ -34,10 +34,12 @@ public interface RoomTypeSessionBeanRemote {
 
     public void updateRoomTypeSize(Long roomTypeId, String newSize);
 
-    public RoomTypeEntity retrieveRoomTypeEntityById (Long roomTypeId) throws RecordNotFoundException;
+    public RoomTypeEntity retrieveRoomTypeEntityById(Long roomTypeId) throws RecordNotFoundException;
 
-    public String deleteRoomType(Long roomTypeId, Long newRoomTypeId) throws RecordNotFoundException;
+    public String deleteRoomType(Long roomTypeId) throws Exception;
 
-    
+    public void updateRoomTypeNextHigherRoomType(Long roomTypeId, Long nextHigherRoomTypeId) throws RecordNotFoundException;
+
+    public void setRoomTypeStatus(Long roomTypeId, String status);
 
 }

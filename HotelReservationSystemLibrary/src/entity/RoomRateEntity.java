@@ -9,11 +9,10 @@ import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -31,39 +30,56 @@ public class RoomRateEntity implements Serializable {
     private Long roomRateId;
     
     @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
     private BigDecimal rate;
-    
-    private String roomType;
-    
-    
+
     @Temporal(TemporalType.DATE)
+    @Column(nullable = true)
     private Date validFrom;
-    
+
     @Temporal(TemporalType.DATE)
+    @Column(nullable = true)
     private Date validTo;
+
+    private String rateType;
+
+    @ManyToOne
+    @JoinColumn(name = "roomTypeId")
+    private RoomTypeEntity roomType;
     
+    private String status;
 
     public RoomRateEntity() {
     }
-    
-    
 
-    public RoomRateEntity(BigDecimal rateAmount, String roomType, Date startDate, Date endDate) {
+    public RoomRateEntity(String name, BigDecimal rate, String rateType, Date validFrom, Date validTo) {
+        this.name = name;
         this.rate = rate;
+        this.rateType = rateType.toUpperCase();
         this.validFrom = validFrom;
-        this.roomType = roomType;
         this.validTo = validTo;
+        this.status = "AVAILABLE";
+    }
+
+    public String getRateType() {
+        return rateType; 
+    }
+
+    public void setRateType(String rateType) {
+        this.rateType = rateType;
     }
 
     public Long getRoomRateId() {
         return roomRateId;
     }
 
-    public String getRoomType() {
+    public RoomTypeEntity getRoomType() {
         return roomType;
     }
 
-    public void setRoomType(String roomType) {
+    public void setRoomType(RoomTypeEntity roomType) {
         this.roomType = roomType;
     }
 
@@ -85,6 +101,18 @@ public class RoomRateEntity implements Serializable {
 
     public void setRoomRateId(Long roomRateId) {
         this.roomRateId = roomRateId;
+    }
+
+    public void setStatusAvailable() {
+        this.status = "AVAILABLE";
+    }
+
+    public void setStatusDisabled() {
+        this.status = "DISABLED";
+    }
+    
+    public String getDisabledStatus() {
+        return this.status;
     }
 
     @Override
@@ -109,15 +137,33 @@ public class RoomRateEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.RoomRate[ id=" + roomRateId + " ]";
+        if(rateType.equals("NORMAL") || rateType.equals("PUBLISHED")){
+            return "Roomrate ID: " + roomRateId + "\n"
+                    + "Rate Type: " + rateType +"\n"
+                    + "RoomType: " + roomType.getRoomTypeName() + "\n"
+                    + "Room rate: " + rate + "\n"
+                    + "Room rate status: " + status;
+        } else {
+            return "Roomrate ID: " + roomRateId + "\n"
+                    + "Rate Type: " + rateType +"\n"
+                    + "RoomType: " + roomType.getRoomTypeName() + "\n"
+                    + "Valid from: " + validFrom + "\n"
+                    + "Valid to: " + validTo + "\n"
+                    + "Room rate: " + rate + "\n"
+                    + "Room rate status: " + status;
+        }
     }
 
     public void setRoomTypeId(Long roomTypeId) {
-         this.roomRateId = roomRateId;
+        this.roomRateId = roomRateId;
     }
 
     public void setRate(BigDecimal rate) {
         this.rate = rate;
+    }
+    
+    public BigDecimal getRate() {
+        return rate;
     }
 
 }

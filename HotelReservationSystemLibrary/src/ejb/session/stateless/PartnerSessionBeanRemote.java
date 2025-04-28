@@ -8,6 +8,8 @@ import entity.PartnerEntity;
 import java.util.List;
 import javax.ejb.Remote;
 import util.exception.InvalidInputException;
+import util.exception.InvalidLoginCredentialException;
+import util.exception.RecordNotFoundException;
 
 /**
  *
@@ -15,7 +17,10 @@ import util.exception.InvalidInputException;
  */
 @Remote
 public interface PartnerSessionBeanRemote {
-    public void createNewPartner(PartnerEntity partner);
+
+    public Long createNewPartner(PartnerEntity partner) throws Exception;
 
     public List<PartnerEntity> viewAllPartners();
+    
+    public PartnerEntity loginPartner(String email, String password) throws InvalidLoginCredentialException;
 }

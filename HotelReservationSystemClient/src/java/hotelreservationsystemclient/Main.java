@@ -34,6 +34,7 @@ public class Main {
     private static ReservationSessionBeanRemote reservationSessionBean;
     @EJB
     private static EmployeeSessionBeanRemote employeeSessionBean;
+    
 
     public static void main(String[] args) {
         MainApp mainApp = new MainApp(roomSessionBean,ratesSessionBean, guestSessionBean, reservationSessionBean, employeeSessionBean, roomTypeSessionBean, partnerSessionBean);

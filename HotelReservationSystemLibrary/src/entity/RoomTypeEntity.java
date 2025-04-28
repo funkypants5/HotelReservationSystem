@@ -25,7 +25,7 @@ public class RoomTypeEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roomTypeId;
-    
+
     @Column(nullable = false, unique = true)
     @Size(max = 50)
     private String roomTypeName;
@@ -33,15 +33,28 @@ public class RoomTypeEntity implements Serializable {
     @Column(nullable = false)
     @Size(max = 255)
     private String description;
+
+    @Column(nullable = false)
+    @Size(max = 50)
     private String roomSize; // Size in square meters
+
+    @Column(nullable = false)
+    @Size(max = 50)
     private String bed; // e.g., "2 King", "3 Queen"
+
+    @Column(nullable = false)
+    @Size(max = 10)
     private String capacity; // Maximum number of occupants
+
+    @Column(nullable = false)
+    @Size(max = 50)
     private String amenities; // Comma-separated list of amenities
     
-    
+    private String status;
+
     @OneToOne
-    @JoinColumn(name = "roomRateId")
-    private RoomRateEntity roomRate;
+    @JoinColumn(name = "nextHigherRoomTypeId", nullable = true)
+    private RoomTypeEntity nextHigherRoomType;
 
     public RoomTypeEntity() {
     }
@@ -53,14 +66,27 @@ public class RoomTypeEntity implements Serializable {
         this.bed = bed;
         this.capacity = capacity;
         this.amenities = amenities;
+        this.status = "AVAILABLE";
     }
 
-    public RoomRateEntity getRoomRate() {
-        return roomRate;
+    public String getStatus() {
+        return status;
     }
 
-    public void setRoomRate(RoomRateEntity roomRate) {
-        this.roomRate = roomRate;
+    public void setStatusAvailable() {
+        this.status = "AVAILABLE";
+    }
+    
+    public void setStatusDisabled() {
+        this.status = "DISABLED";
+    }
+
+    public RoomTypeEntity getNextHigherRoomType() {
+        return nextHigherRoomType;
+    }
+
+    public void setNextHigherRoomType(RoomTypeEntity nextHigherRoomType) {
+        this.nextHigherRoomType = nextHigherRoomType;
     }
 
     public String getRoomTypeName() {
@@ -141,13 +167,15 @@ public class RoomTypeEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "Room Type ID: " + roomTypeId + "\n" +
-           "Room Type Name: " + roomTypeName + "\n" +
-           "Description: " + description + "\n" +
-           "Room Size: " + roomSize + "\n" +
-           "Bed Configuration: " + bed + "\n" +
-           "Capacity: " + capacity + "\n" +
-           "Amenities: " + amenities + "\n";
+        return "Room Type ID: " + roomTypeId + "\n"
+                + "Room Type Name: " + roomTypeName + "\n"
+                + "Description: " + description + "\n"
+                + "Room Size: " + roomSize + "\n"
+                + "Bed Configuration: " + bed + "\n"
+                + "Capacity: " + capacity + "\n"
+                + "Amenities: " + amenities + "\n"
+                + "Next Higher Room Type: " + (nextHigherRoomType != null ? nextHigherRoomType.getRoomTypeName() : "None") + "\n"
+                + "Room Type Status: " + status + "\n";
     }
-    
+
 }

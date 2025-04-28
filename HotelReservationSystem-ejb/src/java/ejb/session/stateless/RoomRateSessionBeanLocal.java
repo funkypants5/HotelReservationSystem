@@ -4,7 +4,12 @@
  */
 package ejb.session.stateless;
 
+import entity.RoomRateEntity;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 import javax.ejb.Local;
+import util.exception.RecordNotFoundException;
 
 /**
  *
@@ -12,5 +17,22 @@ import javax.ejb.Local;
  */
 @Local
 public interface RoomRateSessionBeanLocal {
+
+    public Long createNewRoomRate(RoomRateEntity r, Long roomTypeId);
+
+    public List<RoomRateEntity> retrieveAllRoomRates();
+
+    public RoomRateEntity retrieveRoomRateById(Long roomRateId) throws RecordNotFoundException;
+
+    public void updateRoomRate(Long roomRateId, BigDecimal rateAmount, String rateType, Date checkInDate, Date checkOutDate, String status);
+
+    public void deleteRoomRate(Long roomRateId) throws Exception;
+
+    public void calculateTotalReservationFee(Long reservationId);
+
+    public void calculateTotalWalkInReservationFee(Long reservationId);
+
+    public BigDecimal calculateSearchRoomFee(Date checkInDate, Date checkOutDate, Long roomTypeId);
     
+    public BigDecimal calculateWalkInSearchFee(Date checkInDate, Date checkOutDate, Long roomTypeId);
 }

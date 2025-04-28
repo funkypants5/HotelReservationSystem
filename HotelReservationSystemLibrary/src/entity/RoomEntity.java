@@ -13,7 +13,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-
 @Entity
 public class RoomEntity implements Serializable {
 
@@ -21,7 +20,7 @@ public class RoomEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roomId;
-    
+
     @Column(nullable = false)
     private String roomNumber; // e.g., "2015" for room on floor 20, 15th room
 
@@ -35,9 +34,9 @@ public class RoomEntity implements Serializable {
     public RoomEntity() {
     }
 
-    public RoomEntity(String roomNumber) {
+    public RoomEntity(String roomNumber, String roomStatus) {
         this.roomNumber = roomNumber;
-        this.roomStatus = "Available";
+        this.roomStatus = roomStatus.toUpperCase();
     }
 
     public String getRoomNumber() {
@@ -61,11 +60,11 @@ public class RoomEntity implements Serializable {
     }
 
     public void setRoomStatusAvailable() {
-        this.roomStatus = "Available";
+        this.roomStatus = "AVAILABLE";
     }
-    
+
     public void setRoomStatusNotAvailable() {
-        this.roomStatus = "NotAvailable";
+        this.roomStatus = "NOTAVAILABLE";
     }
 
     public Long getRoomId() {
@@ -98,9 +97,10 @@ public class RoomEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "Room ID: " + roomId + "\n" +
-           "Room Number: " + roomNumber + "\n" +
-           "Room Type: " + roomType.getRoomTypeName() + "\n";
+        return "Room ID: " + roomId + "\n"
+                + "Room Number: " + roomNumber + "\n"
+                + "Room Type: " + roomType.getRoomTypeName() + "\n"
+                + "Room Status: " + roomStatus + "\n";
     }
-    
+
 }

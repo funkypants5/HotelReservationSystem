@@ -4,13 +4,17 @@
  */
 package ejb.session.stateless;
 
+import entity.ReservationEntity;
 import entity.RoomEntity;
 import entity.RoomTypeEntity;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.exception.EntityInUseException;
 import util.exception.RecordNotFoundException;
 
 /**
@@ -24,7 +28,15 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanRemote, RoomTypeS
     private EntityManager em;
 
     @Override
-    public Long createNewRoomType(RoomTypeEntity roomType) {
+    public Long createNewRoomType(RoomTypeEntity roomType, Long nextHighest) throws RecordNotFoundException {
+        if (nextHighest != null) {
+            RoomTypeEntity rt = em.find(RoomTypeEntity.class, nextHighest);
+            if (rt == null) {
+                throw new RecordNotFoundException("Next highest room not found!");
+            }
+            roomType.setNextHigherRoomType(rt);
+        }
+
         em.persist(roomType);
         em.flush();
         return roomType.getRoomTypeId();
@@ -32,12 +44,13 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanRemote, RoomTypeS
 
     @Override
     public RoomTypeEntity retrieveRoomType(String roomTypeName) throws RecordNotFoundException {
-        Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt WHERE rt.roomTypeName = :roomTypeName");
-        query.setParameter("roomTypeName", roomTypeName);
-        if (query == null) {
+        try {
+            Query query = em.createQuery("SELECT rt FROM RoomTypeEntity rt WHERE rt.roomTypeName = :roomTypeName");
+            query.setParameter("roomTypeName", roomTypeName);
+            return (RoomTypeEntity) query.getSingleResult();
+        } catch (NoResultException ex) {
             throw new RecordNotFoundException("Room type not found! \n");
         }
-        return (RoomTypeEntity) query.getSingleResult();
     }
 
     private RoomTypeEntity retrieveManagedRoomType(Long roomTypeId) {
@@ -103,25 +116,46 @@ public class RoomTypeSessionBean implements RoomTypeSessionBeanRemote, RoomTypeS
     }
 
     @Override
-    public String deleteRoomType(Long roomTypeId, Long newRoomTypeId) throws RecordNotFoundException {
-        RoomTypeEntity oldRoomtype = em.find(RoomTypeEntity.class, roomTypeId);
-        if (oldRoomtype == null) {
+    public String deleteRoomType(Long roomTypeId) throws Exception {
+        RoomTypeEntity oldRoomType = em.find(RoomTypeEntity.class, roomTypeId);
+        if (oldRoomType == null) {
             throw new RecordNotFoundException("Old room type does not exist");
         }
-        RoomTypeEntity newRoomType = em.find(RoomTypeEntity.class, newRoomTypeId);
-        if (newRoomType == null) {
-            throw new RecordNotFoundException("New room type does not exist");
-        }
-        Query query = em.createQuery("SELECT r from RoomEntity r WHERE r.roomType.roomTypeId = :roomTypeId");
+
+        String oldRoomTypeName = oldRoomType.getRoomTypeName();
+        Query query = em.createQuery("SELECT r FROM RoomEntity r WHERE r.roomType.roomTypeId = :roomTypeId");
         query.setParameter("roomTypeId", roomTypeId);
         List<RoomEntity> rooms = query.getResultList();
-        String oldRoomTypeName = oldRoomtype.getRoomTypeName();
 
-        for (RoomEntity room : rooms) {
-            room.setRoomType(newRoomType);
+        if (!rooms.isEmpty()) {
+
+            oldRoomType.setStatusDisabled();
+            throw new EntityInUseException("Room type in use, status set to disabled instead.");
+        } else {
+            em.remove(oldRoomType);
+            em.flush();
+            return oldRoomTypeName;
         }
-        em.remove(oldRoomtype);
-        return oldRoomTypeName;
+    }
+
+    @Override
+    public void updateRoomTypeNextHigherRoomType(Long roomTypeId, Long nextHigherRoomTypeId) throws RecordNotFoundException {
+        RoomTypeEntity nextHigherRoomType = em.find(RoomTypeEntity.class, nextHigherRoomTypeId);
+        if (nextHigherRoomType == null) {
+            throw new RecordNotFoundException("No room type found for next highest room type ID keyed!");
+        }
+        RoomTypeEntity rt = em.find(RoomTypeEntity.class, roomTypeId);
+        rt.setNextHigherRoomType(nextHigherRoomType);
+    }
+
+    @Override
+    public void setRoomTypeStatus(Long roomTypeId, String status) {
+        RoomTypeEntity rt = em.find(RoomTypeEntity.class, roomTypeId);
+        if (status.equals("AVAILABLE")) {
+            rt.setStatusAvailable();
+        } else {
+            rt.setStatusDisabled();
+        }
     }
 
 }

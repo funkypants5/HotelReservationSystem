@@ -4,7 +4,12 @@
  */
 package ejb.session.stateless;
 
+import entity.GuestEntity;
+import entity.VisitorEntity;
 import javax.ejb.Local;
+import util.exception.InvalidInputException;
+import util.exception.InvalidLoginCredentialException;
+import util.exception.RecordNotFoundException;
 
 /**
  *
@@ -12,5 +17,17 @@ import javax.ejb.Local;
  */
 @Local
 public interface GuestSessionBeanLocal {
-    
+
+    public GuestEntity visitorLogin(String email, String password) throws InvalidLoginCredentialException;
+
+    public GuestEntity retrieveGuestByEmail(String email) throws RecordNotFoundException;
+
+    public VisitorEntity retrieveVisitorByEmail(String email) throws RecordNotFoundException;
+
+    public Long visitorRegister(String name, String email, String password) throws InvalidInputException;
+
+    public Long createNewVisitor(VisitorEntity visitor);
+
+    public Long createNewGuest(GuestEntity guestEntity);
+
 }
